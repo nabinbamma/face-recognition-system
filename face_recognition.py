@@ -19,7 +19,7 @@ class Face_Recognition:
         self.root.geometry("1530x790+0+0")
         self.root.title("Face Recognition System")
         
-        title_lbl=Label(self.root,text="FACE RECONGNITION",font=("times new roman",20,"bold"),bg="lightblue",fg="darkgreen")
+        title_lbl=Label(self.root,text="FACE RECONGNITION",font=("times new roman",22,"bold"),bg="white",fg="black")
         title_lbl.place(x=0,y=0,width=1366,height=35)
         
         #first image
@@ -40,7 +40,7 @@ class Face_Recognition:
         
         # Button
         b1_1=Button(f_lbl,text="Face Recognition",cursor="hand2",command=self.face_recog,font=("times new roman",15,"bold"),bg="darkgreen",fg="white")
-        b1_1.place(x=300,y=605,width=190,height=35)
+        b1_1.place(x=10,y=405,width=190,height=35)
         
     # attendance
     def mark_attendance(self,i,r,n,d):
@@ -48,7 +48,7 @@ class Face_Recognition:
             myDataList=f.readlines()
             name_list=[]
             for line in myDataList:
-                entry=line.split((","))
+                entry=line.split((" , "))
                 name_list.append(entry[0])
             if ((i not in name_list) and (r not in name_list) and (n not in name_list) and (d not in name_list) ) : 
                 now=datetime.now()
@@ -70,28 +70,35 @@ class Face_Recognition:
             coord=[]
         
             for (x,y,w,h) in features:
-                cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),3)
+                cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),3)  # size color and thikness
                 id,predict=clf.predict(gray_image[y:y+h,x:x+w])
-                confidence=int((100*(1-predict/300)))
+                confidence=int((100*(1-predict/300)))     # formula  for confidance 
                 
                 conn=mysql.connector.connect(host="localhost",username="root",password="Nabin@.1?",database="face_recognizer")
                 my_cursor=conn.cursor()
                 
-                my_cursor.execute("select Name from student where Id="+str(id))
-                n=my_cursor.fetchone()
-                n="+".join(n)
-                
-                my_cursor.execute("select Roll from student where Id="+str(id))
-                r=my_cursor.fetchone()
-                r="+".join(r)
-                
-                my_cursor.execute("select Dep from student where Id="+str(id))
-                d=my_cursor.fetchone()
-                d="+".join(d)
-                
                 my_cursor.execute("select Id from student where Id="+str(id))
                 i=my_cursor.fetchone()
                 i="+".join(i)
+                
+                
+                my_cursor.execute("select Roll from student where Id="+str(id))
+                r=my_cursor.fetchone()
+                # r="+".join(r)
+                r=str(r)   # second methood
+                
+               
+                my_cursor.execute("select Name from student where Id="+str(id))
+                n=my_cursor.fetchone()
+                # n="+".join(n)
+                n=str(n) 
+                
+                
+                my_cursor.execute("select Dep from student where Id="+str(id))
+                d=my_cursor.fetchone()
+                # d="+".join(d)
+                d=str(d)
+                
                 
                 if confidence>77:
                     cv2.putText(img,f"Id:{i}",(x,y-75),cv2.FONT_HERSHEY_COMPLEX,0.8,(255,255,255),3)
@@ -115,11 +122,11 @@ class Face_Recognition:
         clf=cv2.face.LBPHFaceRecognizer_create()
         clf.read("classifier.xml")
         
-        video_cap=cv2.VideoCapture(0)
+        video_cap=cv2.VideoCapture(0)  # laptop camera vayera 0 otherwise 1
         
         while True:
             ret,img=video_cap.read()
-            # img=recognize(img,clf,faceCascade)
+            img=recognize(img,clf,faceCascade)   # yo line ma error dekhako xa mero
             cv2.imshow("Welcome to face Recognition",img)
 
             if cv2.waitKey(1)==13:
@@ -127,7 +134,7 @@ class Face_Recognition:
         video_cap.release()
         cv2.destroyAllWindows()
         
-        # repeat
+        # # repeat
         # captureDevice = cv2.VideoCapture(0) #captureDevice = camera
 
         # while True:

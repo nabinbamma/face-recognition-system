@@ -237,7 +237,7 @@ class Attandance:
                 exp_write=csv.writer(myfile,delimiter=",")
                 for i in mydata:
                     exp_write.writerow(i)
-                messagebox.showinfo("Daata Expot","Your Data has been Exported to"+os.path.basename(fln)+"Successfully")    
+                messagebox.showinfo("Data Export","Your Data has been Exported to"+os.path.basename(fln)+"Successfully")    
         except Exception as es:
                 messagebox.showerror("Error",f"Due to : {str(es)}",parent=self.root)
         

@@ -16,7 +16,7 @@ class Train:
         self.root.geometry("1530x790+0+0")
         self.root.title("Face Recognition System")
 
-        title_lbl=Label(self.root,text="TRAIN DATA SET",font=("times new roman",20,"bold"),bg="lightblue",fg="darkred")
+        title_lbl=Label(self.root,text="TRAIN DATA SET",font=("times new roman",20,"bold"),bg="yellow",fg="darkred")
         title_lbl.place(x=0,y=0,width=1366,height=35)
         
         img_top=Image.open(r"college_images\tr.jpg")
@@ -52,7 +52,8 @@ class Train:
             faces.append(imageNp)
             ids.append(id)
             cv2.imshow("Training",imageNp)
-            cv2.waitKey(1)==13
+            cv2.waitKey(1)==13    #output dina 1 dekhi 13 second time linxa
+            
         ids=np.array(ids)
         
         # Train the classifier and save 
@@ -60,7 +61,7 @@ class Train:
         clf.train(faces,ids)
         clf.write("classifier.xml")
         cv2.destroyAllWindows()
-        messagebox.showinfo("Result","Training datasets completed !")
+        messagebox.showinfo("Result","Successully, Training datasets completed !")
         
            
             
@@ -68,14 +69,6 @@ class Train:
             
         
         
-        
-
-
-
-
-
-
-
 
 if __name__ == "__main__":
     root=Tk()

@@ -1,3 +1,4 @@
+from codecs import register
 from tkinter import*
 from tkinter import ttk
 import tkinter
@@ -18,6 +19,8 @@ import random
 import datetime
 import mysql.connector
 from tkinter import messagebox
+import cv2
+import re 
 
 def main():
     win=Tk()
@@ -59,17 +62,26 @@ class Login_Window:
         # self.txtuser=ttk.Entry(frame,font=("cursive",14,"bold"))
         # self.txtuser.place(x=40,y=185,width=270)
         
-        email_lbl=Label(frame,text="Email",font=("cursive",12,"bold"),fg="white",bg="black")
+        # #usename rakhera login garda
+        # user_lbl=Label(frame,text="Username",font=("cursive",12,"bold"),fg="white",bg="black")
+        # user_lbl.place(x=70,y=155)
+        
+        # self.txtuser=ttk.Entry(frame,font=("cursive",12,"bold"))
+        # self.txtuser.place(x=40,y=185,width=270)
+        
+        # email rakhera login garda
+        email_lbl=Label(frame,text="Email ",font=("cursive",12,"bold"),fg="white",bg="black")
         email_lbl.place(x=70,y=155)
         
         self.txtemail=ttk.Entry(frame,font=("cursive",12,"bold"))
         self.txtemail.place(x=40,y=185,width=270)
         
-        username_lbl=Label(frame,text="Password",font=("cursive",14,"bold"),fg="white",bg="black")
+        username_lbl=Label(frame,text="Password ",font=("cursive",12,"bold"),fg="white",bg="black")
         username_lbl.place(x=70,y=225)
         
-        self.txtpass=ttk.Entry(frame,font=("cursive",12,"bold"))
+        self.txtpass=ttk.Entry(frame,show="*",font=("cursive",12,"bold"))
         self.txtpass.place(x=40,y=250,width=270)
+        
         
         # icon image
         img2=Image.open(r"college_images\login.jpg")
@@ -91,7 +103,7 @@ class Login_Window:
         loginbtn.place(x=110,y=290,width=100,height=30)
         
         # button for register
-        registerbtn=Button(frame,text="New User Regiser",command=self.register_window,activeforeground="white",activebackground="black",font=("times new roman",12,"bold"),borderwidth=0,fg="white",bg="black")
+        registerbtn=Button(frame,text="New User Register",command=self.register_window,activeforeground="white",activebackground="black",font=("times new roman",12,"bold"),borderwidth=0,fg="white",bg="black")
         registerbtn.place(x=15,y=320,width=150)
         
         # button for forget password
@@ -121,22 +133,23 @@ class Login_Window:
             else:
                 open_main=messagebox.askyesno("YesNo","Access only Authority Person.")    
                 if open_main>0:
-                    self.new_window=Toplevel(self.new_window)
+                    self.new_window=Toplevel(self.root)
                     self.app=Face_Recognition_System(self.new_window)
                 else:
                     if not open_main:
                         return
                 conn.commit()
-                conn.close()  
+                conn.close()
+                
                 
                 # reset password 
     def reset_pass(self):
-        if self.combo_security_Q.get()=="select":
-            messagebox.showerror("Error","select Security Question ")            
+        if self.combo_security_Q.get()=="Select":
+            messagebox.showerror("Error","select Security Question ",parent=self.root2)            
         elif self.txt_security.get()=="":
-            messagebox.showerror("Error","Please enter the answer")
+            messagebox.showerror("Error","Please enter the answer",parent=self.root2)
         elif self.txt_newpass.get()=="":
-            messagebox.showerror("Error","Please enter the new password")        
+            messagebox.showerror("Error","Please enter the new password",parent=self.root2)        
         else:
             conn=mysql.connector.connect(host="localhost",username="root",password="Nabin@.1?",database="face_recognizer")
             my_cursor=conn.cursor()
@@ -145,7 +158,7 @@ class Login_Window:
             my_cursor.execute(query,value)
             row=my_cursor.fetchone()
             if row==None:
-                messagebox.showerror("Error","Please enter the correct Answer")
+                messagebox.showerror("Error","Please enter the correct Answer",parent=self.root2)
             else:
                 query=("update register set password=%s where email=%s")    
                 value=(self.txt_newpass.get(),self.txtemail.get())
@@ -163,7 +176,7 @@ class Login_Window:
     #  forgot password window 
     def forgot_password_window(self):
         if self.txtemail.get()=="":
-            messagebox.showerror("Error","Pleaase Enter the Email address to reset password")
+            messagebox.showerror("Error","Please Enter the Email address to reset password")
         else:
             conn=mysql.connector.connect(host="localhost",username="root",password="Nabin@.1?",database="face_recognizer")
             my_cursor=conn.cursor()
@@ -178,10 +191,10 @@ class Login_Window:
             else:
                 conn.close()
                 self.root2=Toplevel()
-                self.root2.title("Forgot Password")
+                self.root2.title("Forget Password")
                 self.root2.geometry("340x400+950+170") 
                 
-                l=Label(self.root2,text="Forgot Password",font=("times new roman",20,"bold"),fg="red",bg="white")   
+                l=Label(self.root2,text="Forget Password",font=("times new roman",20,"bold"),fg="red",bg="white")   
                 l.place(x=0,y=10,relwidth=1)
                 
                 security_Q=Label(self.root2,text="Select security Questions",font=("times new roman",15,"bold"),fg="black",bg="white")
@@ -202,10 +215,10 @@ class Login_Window:
                 new_password=Label(self.root2,text="New Password",font=("times new roman",15,"bold"),fg="black",bg="white")
                 new_password.place(x=50,y=220)
                 
-                self.txt_newpass=ttk.Entry(self.root2,font=("times new roman",15))
+                self.txt_newpass=ttk.Entry(self.root2,show="*",font=("times new roman",15))
                 self.txt_newpass.place(x=50,y=250,width=250)
                 
-                btn=Button(self.root2,text="Reset",font=("times new roman",18,"bold"),fg="white",bg="blue")
+                btn=Button(self.root2,text="Reset",command=self.reset_pass,font=("times new roman",18,"bold"),fg="white",bg="blue")
                 btn.place(x=100,y=310)
                 
                 
@@ -277,6 +290,11 @@ class Register:
         
         self.txt_contact=ttk.Entry(frame,textvariable=self.var_contact,font=("times new roman",15))
         self.txt_contact.place(x=50,y=200,width=250)
+       
+    #    #callnback and validate conntact
+    #     validate_PhoneNo=self.root.register(self.checkPhoneNo)
+    #     self.txt_contact.config(validate='key',validatecommand=(validate_PhoneNo,'%P'))
+        
         
         email=Label(frame,text="Email",font=("times new roman",15,"bold"),fg="black",bg="white")
         email.place(x=370,y=170)
@@ -306,13 +324,13 @@ class Register:
         pswd=Label(frame,text="Password",font=("times new roman",15,"bold"),fg="black",bg="white")
         pswd.place(x=50,y=310)
         
-        self.txt_pswd=ttk.Entry(frame,textvariable=self.var_pass,font=("times new roman",15))
+        self.txt_pswd=ttk.Entry(frame,show="*",textvariable=self.var_pass,font=("times new roman",15))
         self.txt_pswd.place(x=50,y=340,width=250)
         
         cofirm_pswd=Label(frame,text="Confirm Password",font=("times new roman",15,"bold"),fg="black",bg="white")
         cofirm_pswd.place(x=370,y=310)
         
-        self.txtcofirm_pswd=ttk.Entry(frame,textvariable=self.var_confpass,font=("times new roman",15))
+        self.txtcofirm_pswd=ttk.Entry(frame,show="*",textvariable=self.var_confpass,font=("times new roman",15))
         self.txtcofirm_pswd.place(x=370,y=340,width=250)
         
         #  check button
@@ -332,6 +350,7 @@ class Register:
         self.photoimage1=ImageTk.PhotoImage(img1)
         b1=Button(frame,command=self.return_login,image=self.photoimage1,borderwidth=0,cursor="hand2",font=("times new roman",15,"bold"),fg="white",bg="black")
         b1.place(x=370,y=430,width=150)
+       
         
         #  function declerataion    
         
@@ -378,6 +397,7 @@ class Face_Recognition_System:
         self.root=root
         self.root.geometry("1530x790+0+0")
         self.root.title("Face Recognition System")
+        
 
 
         #first image
@@ -413,7 +433,7 @@ class Face_Recognition_System:
         bg_img.place(x=0,y=130,width=1366,height=768)
 
 
-        title_lbl=Label(bg_img,text="FACE RECONGNITION ATTENDENCE SYSTEM SOFTWARE",font=("times new roman",25,"bold"),bg="white",fg="red")
+        title_lbl=Label(bg_img,text="FACE RECONGNITION ATTENDENCE SYSTEM",font=("times new roman",25,"bold"),bg="white",fg="red")
         title_lbl.place(x=0,y=0,width=1366,height=45)
         
         # time 
@@ -556,10 +576,49 @@ class Face_Recognition_System:
     def help_data(self):
         self.new_window=Toplevel(self.root)
         self.app=Help(self.new_window) 
-                
+        
+        
+        
+        
+    #check phone no
+    def checkPhoneNo(self,PhoneNo):
+        if PhoneNo.isdigit():
+            return True
+        if len(str(PhoneNo))==0:
+            return True
+        else:
+            messagebox.showerror("Invalid","Invalid entry.")
+            return False
+        
+        
+    # def checkpassword(self,password):
+    #     if len(password)<=21:
+    #         if re.match("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z](?=.*[^a-bA-B0-9]))",password):
+    #             return True
+    #         else:
+    #             messagebox.showerror('Invalid','Enter valid password like Nabin@123 ')
+    #             return False
+    #     else:
+    #         messagebox.showerror('Invalid',"Length try to exceed")
+    #         return False       
+            
+    # def checkemail(self,email):
+    #     if len(email)>7:
+    #         if re.match("^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)([a-zA-z]{2,5})$",email):
+    #             return True
+    #         else:
+    #             messagebox.showwarning('Alert','Invalid email Enter valid email like nabin99@gmail.com ')
+    #             return False
+    #     else:
+    #         messagebox.showinfo('Invalid',"Follow standard.")
+    #         return False     
+    #     #validation
+      
+                        
         
 if __name__ == "__main__":
     main()
+    
           
         
 # if __name__ == "__main__":

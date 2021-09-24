@@ -17,8 +17,7 @@ import random
 import datetime
 import mysql.connector
 from tkinter import messagebox
-
-
+import re
 
 
 
@@ -37,7 +36,10 @@ class Register:
         self.var_securityA=StringVar()
         self.var_pass=StringVar()
         self.var_confpass=StringVar()
+        
+      
        
+
         
         
         
@@ -85,6 +87,10 @@ class Register:
         
         self.txt_contact=ttk.Entry(frame,textvariable=self.var_contact,font=("times new roman",15))
         self.txt_contact.place(x=50,y=200,width=250)
+        
+        #callnback and validate conntact
+        validate_PhoneNo=self.root.register(self.checkPhoneNo)
+        self.txt_contact.config(validate='key',validatecommand=(validate_PhoneNo,'%P'))
         
         email=Label(frame,text="Email",font=("times new roman",15,"bold"),fg="black",bg="white")
         email.place(x=370,y=170)
@@ -157,6 +163,7 @@ class Register:
            value=(self.var_email.get(),)
            my_cursor.execute(query,value)
            row=my_cursor.fetchone()
+        #    print row
            if row!=None:
                messagebox.showerror("Error","User already exist,Please try another email")
            else:   
@@ -177,7 +184,39 @@ class Register:
                 messagebox.showinfo("success","Register successfully",parent=self.root)                                                                              
 
 
-
+    #check phone no
+    def checkPhoneNo(self,PhoneNo):
+        if PhoneNo.isdigit():
+            return True
+        if len(str(PhoneNo))==0:
+            return True
+        else:
+            messagebox.showerror("Invalid","Invalid entry.")
+            return False
+        
+    def checkpassword(self,password):
+        if len(password)<=21:
+            if re.match("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z](?=.*[^a-bA-B0-9]))",password):
+                return True
+            else:
+                messagebox.showerror('Invalid','Enter valid password like Nabin@123 ')
+                return False
+        else:
+            messagebox.showerror('Invalid',"Length try to exceed")
+            return False       
+            
+    def checkemail(self,email):
+        if len(email)>7:
+            if re.match("^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)([a-zA-z]{2,5})$",email):
+                return True
+            else:
+                messagebox.showwarning('Alert','Invalid email Enter valid email like nabin99@gmail.com ')
+                return False
+        else:
+            messagebox.showinfo('Invalid',"Follow standard.")
+            return False     
+        
+        
         
         
 if __name__ == "__main__":

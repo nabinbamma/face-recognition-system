@@ -4,7 +4,7 @@ from PIL import Image,ImageTk
 from tkinter import messagebox
 import mysql.connector
 import cv2
-
+import re
 
 
 class Student:
@@ -29,6 +29,9 @@ class Student:
         self.var_phone=StringVar()
         self.var_address=StringVar()
         self.var_teacher=StringVar()
+        self.var_searchtxt=StringVar()
+        self.var_search=StringVar()
+        
 
 
 
@@ -87,7 +90,7 @@ class Student:
         current_course_frame.place(x=5,y=90,width=648,height=108)
 
         #Department
-        dep_label=Label(current_course_frame,text="Department :",font=("times new roman",12,"bold"),bg="green")
+        dep_label=Label(current_course_frame,text="Department :",font=("times new roman",12,"bold"),bg="white")
         dep_label.grid(row=0,column=0,padx=5)
 
         dep_combo=ttk.Combobox(current_course_frame,textvariable=self.var_dep,font=("times new roman",12,"bold"),state="readonly",width=17)
@@ -104,7 +107,7 @@ class Student:
         course_combo.current(0)
         course_combo.grid(row=0,column=3,padx=2,pady=8,sticky=W)
         # Year
-        year_label=Label(current_course_frame,text="Year :",font=("times new roman",12,"bold"),bg="pink")
+        year_label=Label(current_course_frame,text="Year :",font=("times new roman",12,"bold"),bg="white")
         year_label.grid(row=1,column=0,padx=2,sticky=W)
 
         year_combo=ttk.Combobox(current_course_frame,textvariable=self.var_year,font=("times new roman",12,"bold"),state="readonly",width=17)
@@ -113,7 +116,7 @@ class Student:
         year_combo.grid(row=1,column=1,padx=2,pady=8,sticky=W)
 
         # Semester
-        semester_label=Label(current_course_frame,text="Semester :",font=("times new roman",12,"bold"),bg="yellow")
+        semester_label=Label(current_course_frame,text="Semester :",font=("times new roman",12,"bold"),bg="white")
         semester_label.grid(row=1,column=2,padx=2,sticky=W)
 
         semester_combo=ttk.Combobox(current_course_frame,textvariable=self.var_semester,font=("times new roman",12,"bold"),state="readonly",width=17)
@@ -139,6 +142,11 @@ class Student:
         studentName_entry=ttk.Entry(class_Student_frame,width=20,textvariable=self.var_std_name,font=("times new roman",12,"bold"))
         studentName_entry.grid(row=0,column=3,padx=8,pady=4,sticky=W)
 
+        # #callnback and validate student name
+        # validate_name=self.root.register(self.checkname)
+        # studentName_entry.config(validate='key',validatecommand=(validate_name,'%P'))
+        
+        
         # class division
         class_div_label=Label(class_Student_frame,text="Class Division :",font=("times new roman",12,"bold"),bg="white")
         class_div_label.grid(row=1,column=0,padx=2,pady=4,sticky=W)
@@ -152,11 +160,16 @@ class Student:
         div_combo.grid(row=1,column=1,padx=8,pady=4,sticky=W)
 
         # Roll no
-        roll_no_label=Label(class_Student_frame,text="Roll No :",font=("times new roman",12,"bold"),bg="white")
+        roll_no_label=Label(class_Student_frame,text="RollNo :",font=("times new roman",12,"bold"),bg="white")
         roll_no_label.grid(row=1,column=2,padx=2,pady=4,sticky=W)
 
         roll_no_entry=ttk.Entry(class_Student_frame,width=20,textvariable=self.var_roll,font=("times new roman",12,"bold"))
         roll_no_entry.grid(row=1,column=3,padx=8,pady=4,sticky=W)
+
+        #callnback and validate conntact
+        validate_RollNo=self.root.register(self.checkRollNo)
+        roll_no_entry.config(validate='key',validatecommand=(validate_RollNo,'%P'))
+        
 
         # Gender
         gender_label=Label(class_Student_frame,text="Gender :",font=("times new roman",12,"bold"),bg="white")
@@ -182,14 +195,19 @@ class Student:
 
         email_entry=ttk.Entry(class_Student_frame,width=20,textvariable=self.var_email,font=("times new roman",12,"bold"))
         email_entry.grid(row=3,column=1,padx=8,pady=4,sticky=W)
+    
 
         # phone no
-        phone_label=Label(class_Student_frame,text="Phone No :",font=("times new roman",12,"bold"),bg="white")
+        phone_label=Label(class_Student_frame,text="PhoneNo :",font=("times new roman",12,"bold"),bg="white")
         phone_label.grid(row=3,column=2,padx=2,pady=4,sticky=W)
 
         phone_entry=ttk.Entry(class_Student_frame,width=20,textvariable=self.var_phone,font=("times new roman",12,"bold"))
         phone_entry.grid(row=3,column=3,padx=8,pady=4,sticky=W)
 
+        #callnback and validate conntact
+        validate_PhoneNo=self.root.register(self.checkPhoneNo)
+        phone_entry.config(validate='key',validatecommand=(validate_PhoneNo,'%P'))
+        
         # Address
         address_label=Label(class_Student_frame,text="Address :",font=("times new roman",12,"bold"),bg="white")
         address_label.grid(row=4,column=0,padx=2,pady=4,sticky=W)
@@ -245,7 +263,7 @@ class Student:
         Right_frame=LabelFrame(main_frame,bd=2,bg="white",relief=RIDGE,text="Students Details",font=("times new roman",12,"bold"))
         Right_frame.place(x=670,y=2,width=660,height=520)
 
-        img_right=Image.open(r"C:\Users\welcome\Desktop\Face_Recognition System\college_images\pho.jpg")
+        img_right=Image.open(r"C:\Users\welcome\Desktop\Face_Recognition System\college_images\uml.jpg")
         img_right=img_right.resize((660, 90),Image.ANTIALIAS)
         self.photoimg_right=ImageTk.PhotoImage(img_right)
 
@@ -260,19 +278,19 @@ class Student:
         search_label=Label(search_frame,text="Search By:",font=("times new roman",14,"bold"),bg="red",fg="white")
         search_label.grid(row=0,column=0,padx=2,pady=4,sticky=W)
 
-        search_combo=ttk.Combobox(search_frame,font=("times new roman",12,"bold"),state="readonly",width=12)
-        search_combo["values"]=("Select","Roll_No","Phone_No")
+        search_combo=ttk.Combobox(search_frame,textvariable=self.var_search,font=("times new roman",12,"bold"),state="readonly",width=12)
+        search_combo["values"]=("Select","StudentID","Roll")
         search_combo.current(0)
         search_combo.grid(row=0,column=1,padx=2,pady=8,sticky=W)
 
-        search_entry=ttk.Entry(search_frame,width=14,font=("times new roman",12,"bold"))
+        search_entry=ttk.Entry(search_frame,textvariable=self.var_searchtxt,width=14,font=("times new roman",12,"bold"))
         search_entry.grid(row=0,column=2,padx=8,pady=4,sticky=W)
 
 
-        search_button=Button(search_frame,text="Search",width=14,font=("times new roman",10,"bold"),bg="blue",fg="white")
+        search_button=Button(search_frame,command=self.search_data,text="Search",width=14,font=("times new roman",10,"bold"),bg="blue",fg="white")
         search_button.grid(row=0,column=3,padx=3)
         
-        showAll_button=Button(search_frame,text="Show All",width=14,font=("times new roman",10,"bold"),bg="blue",fg="white")
+        showAll_button=Button(search_frame,command=self.search_data,text="Show All",width=14,font=("times new roman",10,"bold"),bg="blue",fg="white")
         showAll_button.grid(row=0,column=4,padx=3)
         # table frame
         table_frame=Frame(Right_frame,bd=2,bg="white",relief=RIDGE)
@@ -553,13 +571,13 @@ class Student:
             
     # search data     
     def search_data(self):
-        if self.searchTxt_var.get()=="" or self.search_var.get()=="Select Option":
+        if self.var_searchtxt.get()=="" or self.var_search.get()=="Select Option":
             messagebox.showerror("Error","Select Combo option and enter entry box",parent=self.root)
         else:
             try:
-                conn=mysql.connector.connect(host="localhost",username="root",password="Nabin@.1?",database="face_recognizer")
+                conn=mysql.connector.connect(host='localhost',username='root',password="Nabin@.1?",database="face_recognizer")
                 my_cursor=conn.cursor()
-                my_cursor.execute("select * from student where " +str(self.search_var.get())+" LIKE '%"+str(self.searchTxt_var.get())+"%'")
+                my_cursor.execute("select * from student where " +str(self.var_search.get())+" LIKE '%"+str(self.var_searchtxt.get())+"%'")
                 rows=my_cursor.fetchall()         
                 if len(rows)!=0:
                     self.student_table.delete(*self.student_table.get_children())
@@ -571,6 +589,38 @@ class Student:
                 conn.close()
             except Exception as es:
                 messagebox.showerror("Error",f"Due To :{str(es)}",parent=self.root)
+     
+     
+    # #check username
+    # def checkname(self,name):
+    #     if name.isalnum():
+    #         return True
+    #     if name=='':
+    #         return True
+    #     else:
+    #         messagebox.showerror('Invalid','Not Allowed' +name[-1])
+    #         return False 
+        
+    #check phone no
+    def checkPhoneNo(self,PhoneNo):
+        if PhoneNo.isdigit():
+            return True
+        if len(str(PhoneNo))==0:
+            return True
+        else:
+            messagebox.showerror("Invalid","Invalid entry.")
+            return False
+    
+    #check rollno
+    def checkRollNo(self,RollNo):
+        if RollNo.isdigit():
+            return True
+        if len(str(RollNo))==0:
+            return True
+        else:
+            messagebox.showerror("Invalid","Invalid entry.")
+            return False    
+                        
         
 
                     

@@ -54,7 +54,7 @@ class Face_Recognition_System:
         bg_img.place(x=0,y=130,width=1366,height=768)
 
 
-        title_lbl=Label(bg_img,text="FACE RECONGNITION ATTENDENCE SYSTEM SOFTWARE",font=("times new roman",25,"bold"),bg="white",fg="red")
+        title_lbl=Label(bg_img,text="FACE RECONGNITION ATTENDENCE SYSTEM",font=("times new roman",25,"bold"),bg="white",fg="red")
         title_lbl.place(x=0,y=0,width=1366,height=45)
         
         # time 
@@ -172,7 +172,7 @@ class Face_Recognition_System:
         self.app=Student(self.new_window)
         
     def iExit(self):
-        self.iExit=tkinter.messagebox.askyesno("Face Recognition","Are you sure exit from this project, Good Luck !",parent=self.root)
+        self.iExit=tkinter.messagebox.askyesno("Face Recognition System","Are you sure exit from this project, Good Luck !",parent=self.root)
         if self.iExit >0:
             self.root.destroy()
         else:
