@@ -21,6 +21,7 @@ import mysql.connector
 from tkinter import messagebox
 import cv2
 import re 
+from register import Register
 
 def main():
     win=Tk()
@@ -131,10 +132,12 @@ class Login_Window:
             if row == None:
                 messagebox.showerror("Error","Invalid username and password")
             else:
-                open_main=messagebox.askyesno("YesNo","Access only Authority Person.")    
+                open_main=messagebox.askyesno("YesNo","Access only Admin Person.")    
                 if open_main>0:
                     self.new_window=Toplevel(self.root)
                     self.app=Face_Recognition_System(self.new_window)
+                    self.root.withdraw()
+                   
                 else:
                     if not open_main:
                         return
@@ -359,8 +362,8 @@ class Register:
                 messagebox.showerror("Error","All fields are required.")
         elif self.var_pass.get()!=self.var_confpass.get():
                 messagebox.showerror("Error","Password and Confirm Password must be same.")
-        elif self.var_check.get()==0:
-                messagebox.showerror("Error","Please agree our terms and conditions")       
+        # elif self.var_check.get()==0:
+        #         messagebox.showerror("Error","Please agree our terms and conditions")       
         else:
            conn=mysql.connector.connect(host="localhost",username="root",password="Nabin@.1?",database="face_recognizer")
            my_cursor=conn.cursor()
@@ -590,7 +593,6 @@ class Face_Recognition_System:
             messagebox.showerror("Invalid","Invalid entry.")
             return False
         
-        
     # def checkpassword(self,password):
     #     if len(password)<=21:
     #         if re.match("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z](?=.*[^a-bA-B0-9]))",password):
@@ -609,10 +611,10 @@ class Face_Recognition_System:
     #         else:
     #             messagebox.showwarning('Alert','Invalid email Enter valid email like nabin99@gmail.com ')
     #             return False
-    #     else:
+    #     else:#
     #         messagebox.showinfo('Invalid',"Follow standard.")
     #         return False     
-    #     #validation
+        #validation
       
                         
         

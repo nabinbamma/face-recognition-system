@@ -5,6 +5,7 @@ from PIL import Image,ImageTk
 from tkinter import messagebox
 import mysql.connector
 import cv2
+import cv2 as cv
 import os
 import numpy as np
 from time import strftime
@@ -44,11 +45,11 @@ class Face_Recognition:
         
     # attendance
     def mark_attendance(self,i,r,n,d):
-        with open("Bamma.csv","r+",newline="\n") as f:
+        with open("Bamma.csv","w+",newline="\n") as f:
             myDataList=f.readlines()
             name_list=[]
             for line in myDataList:
-                entry=line.split((" , "))
+                entry=line.split(",")     #yesari lekhda ni hunxa   entry=line.split(( ", "))
                 name_list.append(entry[0])
             if ((i not in name_list) and (r not in name_list) and (n not in name_list) and (d not in name_list) ) : 
                 now=datetime.now()
@@ -77,34 +78,44 @@ class Face_Recognition:
                 conn=mysql.connector.connect(host="localhost",username="root",password="Nabin@.1?",database="face_recognizer")
                 my_cursor=conn.cursor()
                 
-                my_cursor.execute("select Id from student where Id="+str(id))
+                my_cursor.execute("select Id from student where Id="+ str(id))
                 i=my_cursor.fetchone()
-                i="+".join(i)
+                # i="+".join(i)
+                i=str(i)
                 
-                
-                my_cursor.execute("select Roll from student where Id="+str(id))
+                my_cursor.execute("select Roll from student where Id="+ str(id))
                 r=my_cursor.fetchone()
                 # r="+".join(r)
-                r=str(r)   # second methood
-                
-               
-                my_cursor.execute("select Name from student where Id="+str(id))
+                r=str(r)   # second methood                
+                     
+                my_cursor.execute("select Name from student where Id="+ str(id))
                 n=my_cursor.fetchone()
                 # n="+".join(n)
                 n=str(n) 
                 
                 
-                my_cursor.execute("select Dep from student where Id="+str(id))
+                my_cursor.execute("select Dep from student where Id="+ str(id))
                 d=my_cursor.fetchone()
                 # d="+".join(d)
                 d=str(d)
+                
+                if predict < 500:
+                    # if result[1] < 500:
+                    confidence=int((100*(1-predict/300)))
+                    # str2 = str(confidence)
+                    # confidence = int(100 * (1 - (result[1])/300))
+                    # display_string = str(confidence)+'% confidence it is user'
+                # cv2.putText(img,display_string(250, 250), cv2.FONT_HERSHEY_COMPLEX,1,(0,255,0),3)
+                    cv2.putText(img,f"Accuracy:{confidence}%",(x, y-95), cv2.FONT_HERSHEY_COMPLEX,0.8,(0,255,0),3)
+                
+                
                 
                 
                 if confidence>77:
                     cv2.putText(img,f"Id:{i}",(x,y-75),cv2.FONT_HERSHEY_COMPLEX,0.8,(255,255,255),3)
                     cv2.putText(img,f"Roll:{r}",(x,y-55),cv2.FONT_HERSHEY_COMPLEX,0.8,(255,255,255),3)
                     cv2.putText(img,f"Name:{n}",(x,y-30),cv2.FONT_HERSHEY_COMPLEX,0.8,(255,255,255),3)
-                    cv2.putText(img,f"Department:{d}",(x,y-5),cv2.FONT_HERSHEY_COMPLEX,0.8,(255,255,255),3)
+                    cv2.putText(img,f"Dep:{d}",(x,y-5),cv2.FONT_HERSHEY_COMPLEX,0.8,(255,255,255),3)
                     self.mark_attendance(i,r,n,d)
                 else:
                     cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),3)
@@ -122,15 +133,17 @@ class Face_Recognition:
         clf=cv2.face.LBPHFaceRecognizer_create()
         clf.read("classifier.xml")
         
-        video_cap=cv2.VideoCapture(0)  # laptop camera vayera 0 otherwise 1
+        # video_cap=cv2.VideoCapture(0)  # laptop camera vayera 0 otherwise 1
+        video_cap=cv2.VideoCapture(0,cv2.CAP_DSHOW)
+        
         
         while True:
             ret,img=video_cap.read()
-            img=recognize(img,clf,faceCascade)   # yo line ma error dekhako xa mero
+            img=recognize(img,clf,faceCascade)   
             cv2.imshow("Welcome to face Recognition",img)
 
             if cv2.waitKey(1)==13:
-                break
+                break;
         video_cap.release()
         cv2.destroyAllWindows()
         

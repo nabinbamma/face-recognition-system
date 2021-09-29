@@ -5,6 +5,13 @@ from tkinter import messagebox
 import mysql.connector
 import cv2
 import re
+import re as re2 
+import cv2 as cv
+import re
+from datetime import datetime
+# import smtplib 
+
+  
 
 
 class Student:
@@ -12,6 +19,7 @@ class Student:
         self.root=root
         self.root.geometry("1530x790+0+0")
         self.root.title("Face Recognition System")
+        
 
 
         # varibles
@@ -94,7 +102,7 @@ class Student:
         dep_label.grid(row=0,column=0,padx=5)
 
         dep_combo=ttk.Combobox(current_course_frame,textvariable=self.var_dep,font=("times new roman",12,"bold"),state="readonly",width=17)
-        dep_combo["values"]=("Select Department","IT","CMP","CIVIL"," MBBS")
+        dep_combo["values"]=("Select Department","IT","CMP","CIVIL")
         dep_combo.current(0)
         dep_combo.grid(row=0,column=1,padx=2,pady=8,sticky=W)
 
@@ -103,7 +111,7 @@ class Student:
         course_label.grid(row=0,column=2,padx=5,sticky=W)
 
         course_combo=ttk.Combobox(current_course_frame,textvariable=self.var_course,font=("times new roman",12,"bold"),state="readonly",width=17)
-        course_combo["values"]=("Select Course","BE","BSC","MEDICAL","MGMT")
+        course_combo["values"]=("Select Course","CN","CG","OODM","AI")
         course_combo.current(0)
         course_combo.grid(row=0,column=3,padx=2,pady=8,sticky=W)
         # Year
@@ -134,6 +142,11 @@ class Student:
 
         studentID_entry=ttk.Entry(class_Student_frame,width=20,textvariable=self.var_std_id,font=("times new roman",12,"bold"))
         studentID_entry.grid(row=0,column=1,padx=8,pady=4,sticky=W)
+        
+        #callnback and validate student name
+        validate_ID=self.root.register(self.checkID)
+        studentID_entry.config(validate='key',validatecommand=(validate_ID,'%P'))
+        
 
         # student name
         studentName_label=Label(class_Student_frame,text="Student Name :",font=("times new roman",12,"bold"),bg="white")
@@ -142,9 +155,9 @@ class Student:
         studentName_entry=ttk.Entry(class_Student_frame,width=20,textvariable=self.var_std_name,font=("times new roman",12,"bold"))
         studentName_entry.grid(row=0,column=3,padx=8,pady=4,sticky=W)
 
-        # #callnback and validate student name
-        # validate_name=self.root.register(self.checkname)
-        # studentName_entry.config(validate='key',validatecommand=(validate_name,'%P'))
+        #callnback and validate student name
+        validate_name=self.root.register(self.checkname)
+        studentName_entry.config(validate='key',validatecommand=(validate_name,'%P'))
         
         
         # class division
@@ -188,6 +201,11 @@ class Student:
 
         dob_entry=ttk.Entry(class_Student_frame,width=20,textvariable=self.var_dob,font=("times new roman",12,"bold"))
         dob_entry.grid(row=2,column=3,padx=8,pady=4,sticky=W)
+        
+        #callnback and validate conntact
+        validate_DOB=self.root.register(self.validate)
+        dob_entry.config(validate='key',validatecommand=(validate_DOB,'%P'))
+        
 
         # Email
         email_label=Label(class_Student_frame,text="Email :",font=("times new roman",12,"bold"),bg="white")
@@ -195,6 +213,12 @@ class Student:
 
         email_entry=ttk.Entry(class_Student_frame,width=20,textvariable=self.var_email,font=("times new roman",12,"bold"))
         email_entry.grid(row=3,column=1,padx=8,pady=4,sticky=W)
+        
+        # #callnback and validate student name
+        # validate_email=self.root.register(self.checkemail)
+        # email_entry.config(validate='key',validatecommand=(validate_email,'%P'))
+        
+        
     
 
         # phone no
@@ -205,8 +229,8 @@ class Student:
         phone_entry.grid(row=3,column=3,padx=8,pady=4,sticky=W)
 
         #callnback and validate conntact
-        validate_PhoneNo=self.root.register(self.checkPhoneNo)
-        phone_entry.config(validate='key',validatecommand=(validate_PhoneNo,'%P'))
+        validate_phone=self.root.register(self.checkphone)
+        phone_entry.config(validate='key',validatecommand=(validate_phone,'%P'))
         
         # Address
         address_label=Label(class_Student_frame,text="Address :",font=("times new roman",12,"bold"),bg="white")
@@ -214,6 +238,10 @@ class Student:
 
         address_entry=ttk.Entry(class_Student_frame,width=20,textvariable=self.var_address,font=("times new roman",12,"bold"))
         address_entry.grid(row=4,column=1,padx=8,pady=4,sticky=W)
+        
+        # #callnback and validate conntact
+        # validate_add=self.root.register(self.checkadd)
+        # address_entry.config(validate='key',validatecommand=(validate_add,'%P'))
 
         # Teacher Name
         teacher_label=Label(class_Student_frame,text="Teacher Name :",font=("times new roman",12,"bold"),bg="white")
@@ -249,11 +277,11 @@ class Student:
         btn_frame1=Frame(class_Student_frame,bd=2,relief=RIDGE,bg="white")
         btn_frame1.place(x=1,y=230,width=642,height=35)
 
-        take_photo_button=Button(btn_frame1,command=self.generate_dataset,text="Take Photo Sample",width=35,font=("times new roman",12,"bold"),bg="red",fg="white")
+        take_photo_button=Button(btn_frame1,command=self.generate_dataset,text="Take Photo Sample",width=75,font=("times new roman",12,"bold"),bg="red",fg="white")
         take_photo_button.grid(row=0,column=0)
 
-        update_photo_button=Button(btn_frame1,text="Update Photo Sample",width=35,font=("times new roman",12,"bold"),bg="red",fg="white")
-        update_photo_button.grid(row=0,column=1)
+        # update_photo_button=Button(btn_frame1,text="Update Photo Sample",width=35,font=("times new roman",12,"bold"),bg="red",fg="white")
+        # update_photo_button.grid(row=0,column=1)
 
 
 
@@ -279,7 +307,7 @@ class Student:
         search_label.grid(row=0,column=0,padx=2,pady=4,sticky=W)
 
         search_combo=ttk.Combobox(search_frame,textvariable=self.var_search,font=("times new roman",12,"bold"),state="readonly",width=12)
-        search_combo["values"]=("Select","StudentID","Roll")
+        search_combo["values"]=("Select","Id","Roll")
         search_combo.current(0)
         search_combo.grid(row=0,column=1,padx=2,pady=8,sticky=W)
 
@@ -290,8 +318,8 @@ class Student:
         search_button=Button(search_frame,command=self.search_data,text="Search",width=14,font=("times new roman",10,"bold"),bg="blue",fg="white")
         search_button.grid(row=0,column=3,padx=3)
         
-        showAll_button=Button(search_frame,command=self.search_data,text="Show All",width=14,font=("times new roman",10,"bold"),bg="blue",fg="white")
-        showAll_button.grid(row=0,column=4,padx=3)
+        # showAll_button=Button(search_frame,command=self.search_data,text="Show All",width=14,font=("times new roman",10,"bold"),bg="blue",fg="white")
+        # showAll_button.grid(row=0,column=4,padx=3)
         # table frame
         table_frame=Frame(Right_frame,bd=2,bg="white",relief=RIDGE)
         table_frame.place(x=5,y=155,width=648,height=340)
@@ -458,6 +486,10 @@ class Student:
     def delete_data(self):
         if self.var_std_id.get()=="":
             messagebox.showerror("Error","Student id must be required",parent=self.root)
+            
+        # elif self.var_email.get()=="":
+        #     messagebox.showerror("Error","Please enter the valid email",parent=self.root)
+        
         else:
             try:
                 delete=messagebox.askyesno("student Delete page.","Do yo want to delete this student",parent=self.root)
@@ -591,24 +623,85 @@ class Student:
                 messagebox.showerror("Error",f"Due To :{str(es)}",parent=self.root)
      
      
-    # #check username
-    # def checkname(self,name):
-    #     if name.isalnum():
+     
+     
+     
+     
+    def checkname(self,name):
+        if name.isalnum():
+            return True
+        if name=='':
+            return True
+        else:
+            messagebox.showerror('Invalid','Not allowed' +name[-1])
+    def checkname(self,name):
+       for char in name:
+           if  not (("A" <= char and char <= "Z") or ("a" <= char and char <= "z") or (char == " ")):
+              return False
+       return True 
+    
+    # def checkadd(self,add):
+    #     if add.isalnum():
     #         return True
-    #     if name=='':
+    #     if add=='':
     #         return True
     #     else:
-    #         messagebox.showerror('Invalid','Not Allowed' +name[-1])
+    #         messagebox.showerror('Invalid','Not allowed' +add[-1])
+    # def checkadd(self,name):
+    #    for char in name:
+    #        if  not (("A" <= char and char <= "Z") or ("a" <= char and char <= "z") or (char == " ")):
+    #           return False
+    #    return True 
+   
+   
+    def validate(self,date_text):
+        try:
+            datetime.datetime.strptime(date_text, '%d/%m/%Y')
+        except ValueError:
+            raise ValueError("Incorrect data format, should be YYYY-MM-DD")   
+    # #check email
+    # def checkemail(self,email):
+    #     if email.isalnum():
+    #         return True
+    #     if email=='':
+    #         return True
+    #     else:
+    #         messagebox.showerror('Invalid','Not Allowed' +email[-1])
     #         return False 
         
-    #check phone no
-    def checkPhoneNo(self,PhoneNo):
-        if PhoneNo.isdigit():
+    #check studentid
+    def checkID(self,ID):
+        if ID.isdigit():
             return True
-        if len(str(PhoneNo))==0:
+        if len(str(ID))==0:
             return True
         else:
             messagebox.showerror("Invalid","Invalid entry.")
+            return False
+    
+    # #check phone no
+    # def checkPhoneNo(self,PhoneNo):
+    #     if PhoneNo.isdigit():
+    #         return True
+    #     if len(str(PhoneNo))==0:
+    #         return True
+    #     else:
+    #         messagebox.showerror("Invalid","Invalid entry.")
+    #         return False
+    
+    
+    def checkphone(self,phone):
+        if len(phone) <=10:
+          if phone.isdigit():
+            return True
+          if len(str(phone))==0:
+            return True
+          else:
+            messagebox.showerror('Invalid','Invalid entry')
+            return False
+            
+        else:
+            messagebox.showwarning('Alert','invalid phone enter phone (example:9869036535)')
             return False
     
     #check rollno
@@ -619,13 +712,60 @@ class Student:
             return True
         else:
             messagebox.showerror("Invalid","Invalid entry.")
-            return False    
+            return False     
+  
+    
+    # def checkemail(self,email):   
+    #     regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'   
+    #     if(re.search(regex,email)):   
+    #         return True  
+    #     else:   
+    #         messagebox.showerror("Invalid","Invalid entry.")
+    #         return False     
+  
+          
+    # #check DOB
+    # def checkDOB(self,DOB):
+    #     if DOB.isdigit():
+    #         return True
+    #     if len(str(DOB))==0:
+    #         return True
+    #     else:
+    #         messagebox.showerror("Invalid","Invalid entry.")
+    #         return False        
                         
         
 
                     
                     
                                      
+    # RegExp = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'  
+  
+    # def check(email):   
+  
+    #     if re.search(RegExp,email):
+    #         print("Valid Email")   
+    #     else:
+    #         print("Invalid Email")   
+      
+    # if __name__ == '__main__' :   
+      
+    #     email = "rohit.gupta@mcnsolutions.net"  
+    #     check(email)   
+  
+    #     email = "praveen@c-sharpcorner.com"  
+    #     check(email)   
+  
+    #     email = "inform2atul@gmail.com"  
+    #     check(email)
+    # pattern = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$' 
+    # user_id=input('Enter the email id')
+    # if re.search(pattern,user_id):
+    #     print('valid email id')
+    # else:
+    #     print('invalid')
+         
+    
     
         
 if __name__ == "__main__":

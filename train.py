@@ -17,7 +17,7 @@ class Train:
         self.root.title("Face Recognition System")
 
         title_lbl=Label(self.root,text="TRAIN DATA SET",font=("times new roman",20,"bold"),bg="yellow",fg="darkred")
-        title_lbl.place(x=0,y=0,width=1366,height=35)
+        title_lbl.place(x=5,y=0,width=1360,height=35)
         
         img_top=Image.open(r"college_images\tr.jpg")
         img_top=img_top.resize((1366, 300),Image.ANTIALIAS)
@@ -28,7 +28,7 @@ class Train:
         
         # Button
         b1_1=Button(self.root,text="TRAIN DATA",command=self.train_classifier,cursor="hand2",font=("times new roman",25,"bold"),bg="RED",fg="white")
-        b1_1.place(x=0,y=346,width=1366,height=50)
+        b1_1.place(x=5,y=346,width=1360,height=50)
         
         img_bottom=Image.open(r"college_images\f.jpg")
         img_bottom=img_bottom.resize((1366, 300),Image.ANTIALIAS)

@@ -19,6 +19,8 @@ import mysql.connector
 from tkinter import messagebox
 import re
 
+# import smtplib,ssl
+
 
 
 class Register:
@@ -194,29 +196,36 @@ class Register:
             messagebox.showerror("Invalid","Invalid entry.")
             return False
         
-    def checkpassword(self,password):
-        if len(password)<=21:
-            if re.match("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z](?=.*[^a-bA-B0-9]))",password):
-                return True
-            else:
-                messagebox.showerror('Invalid','Enter valid password like Nabin@123 ')
-                return False
-        else:
-            messagebox.showerror('Invalid',"Length try to exceed")
-            return False       
+    # def checkpassword(self,password):
+    #     if len(password)<=21:
+    #         if re.match("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z](?=.*[^a-bA-B0-9]))",password):
+    #             return True
+    #         else:
+    #             messagebox.showerror('Invalid','Enter valid password like Nabin@123 ')
+    #             return False
+    #     else:
+    #         messagebox.showerror('Invalid',"Length try to exceed")
+    #         return False       
             
-    def checkemail(self,email):
-        if len(email)>7:
-            if re.match("^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)([a-zA-z]{2,5})$",email):
-                return True
-            else:
-                messagebox.showwarning('Alert','Invalid email Enter valid email like nabin99@gmail.com ')
-                return False
-        else:
-            messagebox.showinfo('Invalid',"Follow standard.")
-            return False     
-        
-        
+    # def checkemail(self,email):
+    #     if len(email)>7:
+    #         if re.match("^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)([a-zA-z]{2,5})$",email):
+    #             return True
+    #         else:
+    #             messagebox.showwarning('Alert','Invalid email Enter valid email like nabin99@gmail.com ')
+    #             return False
+    #     else:
+    #         messagebox.showinfo('Invalid',"Follow standard.")
+      
+    #         return False   
+    
+    # def checkemail(self,Email):    
+    #     pattern = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$' 
+    #     user_id=input('Enter the email id')
+    #     if re.search(pattern,user_id):
+    #      print('valid email id')
+    #     else:
+    #      print('invalid')
         
         
 if __name__ == "__main__":
